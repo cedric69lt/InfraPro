@@ -1,5 +1,5 @@
 resource "azurerm_resource_group" "kube" {
-  name     = "Groupe_1-Brief15"
+  name     = "Groupe_1-Brief152"
   location = "francecentral"
 }
 
