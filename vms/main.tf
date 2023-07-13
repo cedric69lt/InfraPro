@@ -96,11 +96,6 @@ resource "tls_private_key" "sshctl" {
     rsa_bits = 4096
 }
 
-resource "tls_private_key" "sshwks" {
-    algorithm = "RSA"
-    rsa_bits = 4096
-}
-
 resource "azurerm_linux_virtual_machine" "ctlplane" {
   name                = "master.kubernetes.lab"
   resource_group_name = azurerm_resource_group.kube.name
@@ -204,7 +199,7 @@ os_disk {
 
 admin_ssh_key {
   username   = "azureuser"
-  public_key = tls_private_key.sshwks.public_key_openssh
+  public_key = tls_private_key.sshctl.public_key_openssh
 }
 
    tags = {
