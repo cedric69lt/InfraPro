@@ -34,12 +34,3 @@ output "pubsshctl" {
 output "pvtsshctl" {
   value = tls_private_key.sshctl.private_key_pem
 }
-
-output "pubwks" {
-  value     = tls_private_key.sshwks.public_key_pem
-  sensitive = true
-}
-
-output "privatewks" {
-  value = tls_private_key.sshwks.private_key_pem
-}
