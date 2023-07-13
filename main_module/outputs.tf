@@ -36,12 +36,3 @@ output "private_keyctl" {
     sensitive = true
 }
 
-output "pub_keywks" {
-  value     = module.vms.pubwks
-  sensitive = true
-}
-
-output "private_keywks" {
-    value   = module.vms.privatewks
-    sensitive = true
-}
