@@ -102,8 +102,6 @@ resource "azurerm_linux_virtual_machine" "ctlplane" {
   location            = azurerm_resource_group.kube.location
   size                = "Standard_D2ds_v4"
   admin_username      = "azureuser"
-  admin_password = "@Azurev69007"
-  disable_password_authentication = false
   network_interface_ids = [
     azurerm_network_interface.kbnic.id,
   ]
