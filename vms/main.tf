@@ -213,14 +213,14 @@ resource "azurerm_network_interface_security_group_association" "linkctlnic" {
   network_security_group_id = azurerm_network_security_group.kube.id
  }
 
-resource "azurerm_network_interface_security_group_association" "linkwks" {
+resource "azurerm_network_interface_security_group_association" "linkwks1" {
   network_interface_id      = azurerm_network_interface.kwk[0].id
   network_security_group_id = azurerm_network_security_group.kube.id
  }
 
-resource "azurerm_network_interface_security_group_association" "linkwks" {
+resource "azurerm_network_interface_security_group_association" "linkwks2" {
   network_interface_id      = azurerm_network_interface.kwk[1].id
   network_security_group_id = azurerm_network_security_group.kube.id
  }
 
-}
+
