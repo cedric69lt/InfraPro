@@ -1,5 +1,5 @@
 resource "azurerm_resource_group" "kube" {
-  name     = "Groupe_1-Brief1523"
+  name     = "Groupe_1-BriefTest"
   location = "francecentral"
 }
 
@@ -55,7 +55,7 @@ resource "azurerm_network_security_group" "kube" {
        protocol = "Tcp"
        source_port_range = "*"
        destination_port_range = "22"
-       source_address_prefix = "*"
+       source_address_prefix = "104.40.239.157/32"
        destination_address_prefix = "*"
    }
 
@@ -205,4 +205,20 @@ admin_ssh_key {
    tags = {
      role = "Workers"
    }
+
+resource "azurerm_network_interface_security_group_association" "linkctlnic" {
+  network_interface_id      = azurerm_network_interface.kbnic.id
+  network_security_group_id = azurerm_network_security_group.kube.id
  }
+
+resource "azurerm_network_interface_security_group_association" "linkwks" {
+  network_interface_id      = azurerm_network_interface.kwk[0].id
+  network_security_group_id = azurerm_network_security_group.kube.id
+ }
+
+resource "azurerm_network_interface_security_group_association" "linkwks" {
+  network_interface_id      = azurerm_network_interface.kwk[1].id
+  network_security_group_id = azurerm_network_security_group.kube.id
+ }
+
+}
