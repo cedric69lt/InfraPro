@@ -205,6 +205,8 @@ admin_ssh_key {
    tags = {
      role = "Workers"
    }
+}
+
 
 resource "azurerm_network_interface_security_group_association" "linkctlnic" {
   network_interface_id      = azurerm_network_interface.kbnic.id
