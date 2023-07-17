@@ -29,31 +29,34 @@
              enforceNodeAllocatable:
              - pods
 
-    - name: initialize the cluster (this could take some time)
-      command: kubeadm init --config /etc/kubernetes/kubeadm-config.yaml >> cluster_initialized.log
+    - name: Initialize the cluster
+      command: sudo kubeadm init --config /etc/kubernetes/kubeadm-config.yaml
       args:
-        chdir: /home/kubeadmin
-        creates: cluster_initialized.log
-
-    - name: create .kube directory
+        chdir: /etc/kubernetes
       become: yes
-      become_user: kubeadmin
+    
+    - name: Create a directory
+      become: yes
       file:
-        path: $HOME/.kube
+        path: /home/azureuser/.kube
         state: directory
-        mode: 0755
+        mode: '0755'
 
-    - name: copy admin.conf to user's kube config
-      copy:
-        src: /etc/kubernetes/admin.conf
-        dest: /home/kubeadmin/.kube/config
-        remote_src: yes
-        owner: kubeadmin
+    - name: Copy admin.conf to .kube/config
+      shell: sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+      environment:
+        HOME: /home/azureuser/
 
-    - name: install Pod network
-      become: yes
-      become_user: kubeadmin
-      shell: kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml >> pod_network_setup.log
-      args:
-        chdir: $HOME
-        creates: pod_network_setup.log
+    - name: Change ownership of .kube/config
+      shell: sudo chown azureuser:azureuser $HOME/.kube/config
+      environment:
+        HOME: /home/azureuser/
+        
+    - name: Download Calico manifest
+      get_url:
+        url: "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml"
+        dest: "/tmp/calico.yaml"
+
+    - name: Apply Calico manifest
+      become_user: azureuser
+      command: kubectl apply -f /tmp/calico.yaml
