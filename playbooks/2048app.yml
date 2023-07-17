@@ -62,6 +62,6 @@
 
     - name : Store the exposed service port value into the variable node_port and create a new security rule for the nsg allowing inbound traffic through the newly exposed service port
       become_user: azureuser
-      shell :  |
+      shell : |
         node_port=$(kubectl get services | grep -o -P '(?<=80:).*(?=/TCP)')
         az network nsg rule create -g Groupe_1-Brief-15Test --nsg-name kubesng -n Kube-gamedep --priority 110 --destination-address-prefixes '*' --destination-port-range=$node_port --access Allow --description "Allow entry into the exposed service port"
