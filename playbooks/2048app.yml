@@ -64,4 +64,4 @@
       become_user: azureuser
       shell :  |
         node_port=$(kubectl get services | grep -o -P '(?<=80:).*(?=/TCP)')
-        az network nsg rule create -g Groupe_1-Brief-15 --nsg-name kubesng -n Kube-gamedep --priority 110 --destination-address-prefixes '*' --destination-port-range=$node_port --access Allow --description "Allow entry into the exposed service port"
+        az network nsg rule create -g Groupe_1-Brief-15Test --nsg-name kubesng -n Kube-gamedep --priority 110 --destination-address-prefixes '*' --destination-port-range=$node_port --access Allow --description "Allow entry into the exposed service port"
