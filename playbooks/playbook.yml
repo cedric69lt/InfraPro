@@ -1,5 +1,0 @@
----
-- import_playbook: ../playbooks/kube-dependencies.yml
-- import_playbook: ../playbooks/master.yml
-- import_playbook: ../playbooks/workers.yml
-- import_playbook: ../playbooks/2048app.yml
