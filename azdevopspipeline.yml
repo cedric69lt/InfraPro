@@ -1,0 +1,56 @@
+jobs:
+- job: Job_1
+  displayName: Agent job 1
+  pool:
+    name: Default
+  steps:
+  - checkout: self
+    fetchDepth: 1
+  - task: TerraformCLI@0
+    displayName: terraform init
+    inputs:
+      command: init
+      workingDirectory: main_module
+  - task: TerraformCLI@0
+    displayName: terraform apply
+    inputs:
+      command: apply
+      workingDirectory: main_module
+  - task: Bash@3
+    displayName: Build the inventory.ini
+    inputs:
+      filePath: $(System.DefaultWorkingDirectory)/main_module/ansi_conf.sh
+      workingDirectory: $(System.DefaultWorkingDirectory)/main_module
+  - task: CmdLine@2
+    displayName: 'Lower permissions and output the private key '
+    inputs:
+      script: >+
+        sudo chmod 400 $PWD/main_module/id_rsa_ctl
+
+        sudo cat $PWD/main_module/id_rsa_ctl
+
+  - task: Ansible@0
+    displayName: Install kubeadm
+    inputs:
+      playbookPathOnAgentMachine: playbooks/kube-dependencies.yml
+      inventoriesAgentMachine: file
+      inventoryFileOnAgentMachine: $(System.DefaultWorkingDirectory)/main_module/inventory.ini
+  - task: Ansible@0
+    displayName: Deploy the cluster
+    inputs:
+      playbookPathOnAgentMachine: playbooks/master.yml
+      inventoriesAgentMachine: file
+      inventoryFileOnAgentMachine: $(System.DefaultWorkingDirectory)/main_module/inventory.ini
+  - task: Ansible@0
+    displayName: Join cluster with workers
+    inputs:
+      playbookPathOnAgentMachine: playbooks/workers.yml
+      inventoriesAgentMachine: file
+      inventoryFileOnAgentMachine: $(System.DefaultWorkingDirectory)/main_module/inventory.ini
+  - task: Ansible@0
+    displayName: 'Deploying 2048 and expose it '
+    inputs:
+      playbookPathOnAgentMachine: playbooks/2048app.yml
+      inventoriesAgentMachine: file
+      inventoryFileOnAgentMachine: $(System.DefaultWorkingDirectory)/main_module/inventory.ini
+...
