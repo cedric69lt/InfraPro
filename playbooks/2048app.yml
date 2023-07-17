@@ -1,0 +1,67 @@
+- hosts: master
+  become: yes
+  tasks:
+    - name: create an empty file for 2048 app manifest
+      copy:
+        content: ""
+        dest: /home/azureuser/2048dep.yml
+        force: no
+
+    - name: configuring the manifest for 2048 deployment
+      blockinfile:
+        path: /home/azureuser/2048dep.yml
+        block: |
+             apiVersion: apps/v1
+             kind: Deployment
+             metadata:
+               name: game-podb
+             spec:
+               replicas: 4
+               selector:
+                 matchLabels:
+                   app: demo-app
+               template:
+                 metadata:
+                   labels:
+                     app: demo-app
+                 spec:
+                   containers:
+                     - name: game-podb01
+                       image: alexwhen/docker-2048:latest
+                       ports:
+                       - containerPort: 80
+    
+    - name : create deployment 
+      become_user: azureuser
+      shell : kubectl apply -f 2048dep.yml
+    
+    - name : expose the deployment
+      become_user: azureuser
+      shell : kubectl expose deployment/game-podb --type="NodePort" --port=80 --target-port=80
+    
+    - name: Get the service exposed port
+      become_user: azureuser
+      shell: kubectl get services/game-podb
+      register: node_port_output
+    
+    - name: display NodePort exposed port value 
+      debug:
+        var: node_port_output.stdout
+
+    - name: Install Azure cli 
+      become_user: azureuser
+      shell: |
+        sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+        sudo dnf install -y https://packages.microsoft.com/config/rhel/8/packages-microsoft-prod.rpm
+        echo -e "[azure-cli]\nname=Azure CLI\nbaseurl=https://packages.microsoft.com/yumrepos/azure-cli\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee /etc/yum.repos.d/azure-cli.repo
+        sudo dnf install -y azure-cli
+    
+    - name : Login to azure through service principal # Set your own values
+      become_user: azureuser
+      shell : az login --service-principal --username 1244ff47-5233-442c-b8df-b761e220bc23 --password YtY8Q~Q6kLoKDGGGEn3lGlILr--HZ5EsbJwOGba- --tenant 7349d3b2-951f-41be-877e-d8ccd9f3e73c
+
+    - name : Store the exposed service port value into the variable node_port and create a new security rule for the nsg allowing inbound traffic through the newly exposed service port
+      become_user: azureuser
+      shell :  |
+        node_port=$(kubectl get services | grep -o -P '(?<=80:).*(?=/TCP)')
+        az network nsg rule create -g Groupe_1-Brief-15 --nsg-name kubesng -n Kube-gamedep --priority 110 --destination-address-prefixes '*' --destination-port-range=$node_port --access Allow --description "Allow entry into the exposed service port"
