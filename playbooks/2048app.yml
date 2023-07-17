@@ -37,7 +37,7 @@
     
     - name : expose the deployment
       become_user: azureuser
-      shell : kubectl expose deployment/game-podb --type="NodePort" --port=80 --target-port=80
+      shell : kubectl expose deployment/game-podb --type="LoadBalancer" --port=80 --target-port=80
     
     - name: Get the service exposed port
       become_user: azureuser
