@@ -24,7 +24,5 @@
         timeout: 1
 
     - name: join cluster
-      command: "{{ hostvars['master'].join_command }} >> node_joined.log"
-      args:
-        chdir: /home/kubeadmin
-        creates: node_joined.log
+      command: "{{ hostvars['master'].join_command }}"
+      
