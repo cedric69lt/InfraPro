@@ -26,6 +26,10 @@ output "Worker2_private_Ip" {
   value = module.vms.The_webserver_Private_ip_worker2
 }
 
+output "vm_usernames" {
+   value = module.vms.usernames
+}
+
 output "pubkeyctl" {
   value     = module.vms.pubsshctl
   sensitive = true
@@ -35,4 +39,3 @@ output "private_keyctl" {
     value   = module.vms.pvtsshctl
     sensitive = true
 }
-
